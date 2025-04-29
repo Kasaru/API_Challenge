@@ -192,26 +192,31 @@ class TestApiChallengePositive():
             assert response.json()['description'] == body[
                 'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
 
-    @pytest.mark.create_todo_via_put
-    def test_create_todo_via_put(self,header):
-        print('Issue a PUT request to unsuccessfully create a todo')
+    @pytest.mark.update_todo_via_post
+    def test_update_todo_via_post(self, header):
+        print('Issue a POST request to successfully update a todo')
 
-        url = base_url + endpoints.invalid_todo_id
-
+        url = base_url + endpoints.todo_id
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
+
+        get_response = requests.get(url, headers=header)
+        assert get_response.status_code == 200, f"Status code is not 200: {get_response.status_code}. Response: {get_response.json()}"
+        print(json.dumps(get_response.json(), indent=4, ensure_ascii=False))
 
         body = {
             'title': random_title,
             'doneStatus': True,
-            'description': random_description,
+            'description': random_description
         }
+        response = requests.post(url, headers=header, json=body)
 
-        response = requests.put(url,json=body,headers=header)
+        print('Changed todo: \n',json.dumps(response.json(), indent=4, ensure_ascii=False))
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
-
-        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
-        assert response.json()['errorMessages'][0] == 'Cannot create todo with PUT due to Auto fields id', (
-            f'Incorrect error message: {response.json()['errorMessages'][0]}')
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == body[
+            'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == body[
+            'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+        assert response.json()['description'] == body[
+            'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"

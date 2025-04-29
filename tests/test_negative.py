@@ -219,3 +219,50 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == "Could not find field: unrecognisedField", (
                                                         f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
+    @pytest.mark.create_todo_via_put
+    def test_create_todo_via_put(self, header):
+        print('Issue a PUT request to unsuccessfully create a todo')
+
+        url = base_url + endpoints.invalid_todo_id
+
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+        }
+
+        response = requests.put(url, json=body, headers=header)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == 'Cannot create todo with PUT due to Auto fields id', (
+            f'Incorrect error message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.update_todo_via_post
+    def test_update_todo_via_post(self, header):
+        print('Issue a POST request for a todo which does not exist. Expect to receive a 404 response.')
+
+        url = base_url + endpoints.invalid_todo_id
+
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+        }
+
+        response = requests.post(url, json=body, headers=header)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == f'No such todo entity instance with id == {endpoints.invalid_todo_id[endpoints.invalid_todo_id.rfind('/') + 1:]} found', (
+            f'Incorrect error message: {response.json()['errorMessages'][0]}')
