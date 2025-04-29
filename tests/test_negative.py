@@ -1,8 +1,6 @@
 import json
-
 import pytest
 import requests
-
 import endpoints
 from utils.data_generation import DataGeneration
 
@@ -25,18 +23,18 @@ class TestApiChallengePositive():
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
 
-    @pytest.mark.post_todo_with_done_status_negative
-    def test_post_todo_with_done_status_negative(self,header):
+    @pytest.mark.post_todo_with_string_done_status_negative
+    def test_post_todo_with_string_done_status_negative(self,header):
         print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
 
-        random_name = DataGeneration.generate_name()
+        random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
         random_status = DataGeneration.generate_word()
 
         url = base_url + endpoints.todos
 
         body = {
-            'title': random_name,
+            'title': random_title,
             'doneStatus': random_status,
             'description': random_description
         }
@@ -50,5 +48,74 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == "Failed Validation: doneStatus should be BOOLEAN but was STRING", ('Incorrect error'
                                                                                                                          f'message: {response.json()['errorMessages'][0]}')
 
+    @pytest.mark.post_todo_with_int_done_status_negative
+    def test_post_todo_with_int_done_status_negative(self, header):
+        print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
 
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        random_status = DataGeneration.generate_int()
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': random_title,
+            'doneStatus': random_status,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == "Failed Validation: doneStatus should be BOOLEAN but was NUMERIC", ('Incorrect error'
+                                                                                         f'message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.too_long_title
+    def test_too_long_title(self, header):
+        print('Issue a POST request to create a todo but fail length validation on the `title` field because title exceeds more than maximum allowable characters.')
+        random_title = DataGeneration.generate_long_text(51)
+        random_description = DataGeneration.generate_description()
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': f'{random_title}',
+            'doneStatus': True,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == "Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50", ('Incorrect error'
+                                                                                             f'message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.too_long_title_with_space
+    def test_too_long_title_with_space(self, header):
+        print('Issue a POST request to create a todo but fail length validation on the `title` field because title exceeds maximum allowable characters + space.')
+        random_title = DataGeneration.generate_long_text(50) + ' '
+        random_description = DataGeneration.generate_description()
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': f'{random_title}',
+            'doneStatus': True,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == "Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50", ('Incorrect error'
+                                                                                             f'message: {response.json()['errorMessages'][0]}')
 
