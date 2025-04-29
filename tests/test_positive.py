@@ -167,30 +167,30 @@ class TestApiChallengePositive():
         assert response.json()['description'] == body[
             'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
 
-        @pytest.mark.update_todo_via_put
-        def test_update_todo_via_put(self,header):
-            print('Issue a POST request to successfully update a todo')
+    @pytest.mark.update_todo_via_put
+    def test_update_todo_via_put(self,header):
+        print('Issue a PUT request to update an existing todo with a complete payload i.e. title, description and donestatus.')
 
-            url = base_url + endpoints.todo_id
-            random_title = DataGeneration.generate_long_text(50)
-            random_description = DataGeneration.generate_long_text(200)
+        url = base_url + endpoints.todo_id
+        random_title = DataGeneration.generate_long_text(50)
+        random_description = DataGeneration.generate_long_text(200)
 
-            body = {
-                'title': random_title,
-                'doneStatus': True,
-                'description': random_description
-            }
-            response = requests.put(url, headers=header, json=body)
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+        response = requests.put(url, headers=header, json=body)
 
-            print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
 
-            assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
-            assert response.json()['title'] == body[
-                'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
-            assert response.json()['doneStatus'] == body[
-                'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
-            assert response.json()['description'] == body[
-                'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == body[
+            'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == body[
+            'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+        assert response.json()['description'] == body[
+            'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
 
     @pytest.mark.update_todo_via_post
     def test_update_todo_via_post(self, header):
@@ -220,3 +220,24 @@ class TestApiChallengePositive():
             'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
         assert response.json()['description'] == body[
             'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
+
+    @pytest.mark.partial_update_todo_via_put
+    def test_partial_update_todo_via_put(self, header):
+        print('Issue a PUT request to update an existing todo with just mandatory items in payload i.e. title.')
+
+        url = base_url + endpoints.todo_id
+        random_title = DataGeneration.generate_long_text(50)
+
+
+        body = {
+            'title': random_title
+        }
+        response = requests.put(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == body[
+            'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == False, f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: False"
+        assert response.json()['description'] == '', f"Unexpected description: {response.json()['description']}. Expected: ''"
