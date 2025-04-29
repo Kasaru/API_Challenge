@@ -241,3 +241,20 @@ class TestApiChallengePositive():
             'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
         assert response.json()['doneStatus'] == False, f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: False"
         assert response.json()['description'] == '', f"Unexpected description: {response.json()['description']}. Expected: ''"
+
+    @pytest.mark.delete_todo
+    def test_delete_todo(self,header):
+        print('Issue a DELETE request to successfully delete a todo')
+
+        url = base_url + endpoints.todo_id
+
+        get_response = requests.get(url, headers=header)
+
+        print(json.dumps(get_response.json(), indent=4, ensure_ascii=False))
+
+
+        response = requests.delete(url, headers=header)
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        check_response = requests.get(url, headers=header)
+        assert check_response.status_code == 404, f"Status code is not 404: {check_response.status_code}. Response: {check_response.json()}"
