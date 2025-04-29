@@ -273,7 +273,6 @@ class TestApiChallengePositive():
 
         url = base_url + endpoints.todo_id
 
-        random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
 
         body = {
@@ -288,4 +287,30 @@ class TestApiChallengePositive():
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
         assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
         assert response.json()['errorMessages'][0] == 'title : field is mandatory', (
+            f'Incorrect error message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.update_todo_via_put_with_wrong_id
+    def test_update_todo_via_put_with_wrong_id(self, header):
+        print('Issue a PUT request to fail to update an existing todo because title is missing in payload')
+
+        url = base_url + endpoints.todo_id
+
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        random_id = DataGeneration.generate_int()
+
+        body = {
+            'id': random_id,
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+        }
+
+        response = requests.put(url, json=body, headers=header)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == f'Can not amend id from {endpoints.todo_id[endpoints.todo_id.rfind('/') + 1:]} to {body['id']}', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
