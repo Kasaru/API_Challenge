@@ -57,9 +57,9 @@ class TestApiChallengePositive():
         random_description = DataGeneration.generate_description()
 
         body = {
-        'title': f'{random_title}',
+        'title': random_title,
         'doneStatus': True,
-        'description': f'{random_description}'
+        'description': random_description
         }
         response = requests.post(url,headers=header,json=body)
 
@@ -101,9 +101,9 @@ class TestApiChallengePositive():
         random_description = DataGeneration.generate_description()
 
         body = {
-            'title': f'{random_title}',
+            'title': random_title,
             'doneStatus': True,
-            'description': f'{random_description}'
+            'description': random_description
         }
         response = requests.post(url, headers=header, json=body)
 
@@ -126,9 +126,34 @@ class TestApiChallengePositive():
         random_description = DataGeneration.generate_long_text(200)
 
         body = {
-            'title': f'{random_title}',
+            'title': random_title,
             'doneStatus': True,
-            'description': f'{random_description}'
+            'description': random_description
+        }
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == body[
+            'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == body[
+            'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+        assert response.json()['description'] == body[
+            'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
+
+    @pytest.mark.max_description_and_title_length
+    def test_max_description_and_title_length(self, header):
+        print('Issue a POST request to create a todo with maximum length title and description fields.')
+
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_long_text(50)
+        random_description = DataGeneration.generate_long_text(200)
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
         }
         response = requests.post(url, headers=header, json=body)
 

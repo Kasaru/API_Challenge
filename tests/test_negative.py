@@ -82,7 +82,7 @@ class TestApiChallengePositive():
         url = base_url + endpoints.todos
 
         body = {
-            'title': f'{random_title}',
+            'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
