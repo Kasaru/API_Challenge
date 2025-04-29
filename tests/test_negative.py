@@ -170,3 +170,71 @@ class TestApiChallengePositive():
                    0] == "Failed Validation: Maximum allowable length exceeded for description - maximum allowed is 200", (
             'Incorrect error'
             f'message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.too_long_content
+    def test_too_long_content(self,header):
+        print('Issue a POST request to create a todo but fail payload length validation on the `description` because your whole payload exceeds maximum allowable 5000 characters.')
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_long_text(5000)
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 413, f'Status code is not 413: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == "Error: Request body too large, max allowed is 5000 bytes", (
+                                                        f'Incorrect error message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.unrecognised_field
+    def test_unrecognised_field(self,header):
+        print('Issue a POST request to create a todo but fail validation because your payload contains an unrecognised field.')
+
+        url = base_url + endpoints.todos
+
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+            'unrecognisedField': 'unrecognisedField'
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][0] == "Could not find field: unrecognisedField", (
+                                                        f'Incorrect error message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.create_todo_via_put
+    def test_create_todo_via_put(self,header):
+        print('Issue a PUT request to unsuccessfully create a todo')
+
+        url = base_url + endpoints.invalid_todo_endpoint
+
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+        }
+
+        response = requests.put(url, headers=header, json=body)
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
