@@ -1,9 +1,8 @@
 import json
-
-from faker import Faker
 import pytest
 import requests
 import endpoints
+from utils.data_generation import DataGeneration
 
 base_url = 'https://apichallenges.herokuapp.com'
 
@@ -54,9 +53,9 @@ class TestApiChallengePositive():
         print('Issue a POST request to successfully create a todo')
 
         url = base_url + endpoints.todos
-        fake = Faker('ru_RU')
-        random_name = fake.company()
-        random_description = fake.text()
+        random_name = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+
         body = {
         'title': f'{random_name}',
         'doneStatus': True,
