@@ -105,7 +105,7 @@ class TestApiChallengePositive():
         url = base_url + endpoints.todos
 
         body = {
-            'title': f'{random_title}',
+            'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
@@ -119,3 +119,54 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == "Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50", ('Incorrect error'
                                                                                              f'message: {response.json()['errorMessages'][0]}')
 
+    @pytest.mark.too_long_description
+    def test_too_long_description(self, header):
+        print(
+            'Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds more than maximum allowable characters.')
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_long_text(201)
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][
+                   0] == "Failed Validation: Maximum allowable length exceeded for description - maximum allowed is 200", (
+            'Incorrect error'
+            f'message: {response.json()['errorMessages'][0]}')
+
+    @pytest.mark.too_long_description_with_space
+    def test_too_long_description_with_space(self, header):
+        print(
+            'Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds maximum allowable characters. + space.')
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_long_text(200) + ' '
+
+        url = base_url + endpoints.todos
+
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert response.json()['errorMessages'][
+                   0] == "Failed Validation: Maximum allowable length exceeded for description - maximum allowed is 200", (
+            'Incorrect error'
+            f'message: {response.json()['errorMessages'][0]}')

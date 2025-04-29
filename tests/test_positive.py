@@ -116,3 +116,28 @@ class TestApiChallengePositive():
             'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
         assert response.json()['description'] == body[
             'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
+
+    @pytest.mark.description_length_200
+    def test_description_length_200(self, header):
+        print('Issue a POST request to successfully create a todo with title length = 50')
+
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_long_text(200)
+
+        body = {
+            'title': f'{random_title}',
+            'doneStatus': True,
+            'description': f'{random_description}'
+        }
+        response = requests.post(url, headers=header, json=body)
+
+        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == body[
+            'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == body[
+            'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+        assert response.json()['description'] == body[
+            'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
