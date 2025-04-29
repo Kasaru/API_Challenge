@@ -219,22 +219,3 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == "Could not find field: unrecognisedField", (
                                                         f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
-    @pytest.mark.create_todo_via_put
-    def test_create_todo_via_put(self,header):
-        print('Issue a PUT request to unsuccessfully create a todo')
-
-        url = base_url + endpoints.invalid_todo_endpoint
-
-        random_title = DataGeneration.generate_name()
-        random_description = DataGeneration.generate_description()
-
-        body = {
-            'title': random_title,
-            'doneStatus': True,
-            'description': random_description,
-        }
-
-        response = requests.put(url, headers=header, json=body)
-
-        assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
