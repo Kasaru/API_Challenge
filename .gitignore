@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# Virtual environments
+venv/
+.env/
+
+# pytest
+.cache/
+*.pytest_cache/
+allure-results/
+allure-report/
+
+# Selenium
+*.session
+*.chromedriver.log
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS-specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git
+.git/
