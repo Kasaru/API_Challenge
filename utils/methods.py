@@ -15,10 +15,18 @@ class HttpMethods:
             return result
 
     @staticmethod
-    def post(url,headers,body):
+    def post_json(url,headers,body):
         with allure.step("POST"):
             Logger.add_request(url, method="POST")
-            result = requests.post(url, headers=headers,data=body)
+            result = requests.post(url, headers=headers,json=body)
+            Logger.add_response(result)
+            return result
+
+    @staticmethod
+    def post_xml(url, headers, body):
+        with allure.step("POST"):
+            Logger.add_request(url, method="POST")
+            result = requests.post(url, headers=headers, data=body)
             Logger.add_response(result)
             return result
 

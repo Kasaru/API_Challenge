@@ -57,7 +57,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url,header,body)
+        response = HttpMethods.post_json(url,header,body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
@@ -94,7 +94,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
@@ -116,7 +116,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
@@ -138,7 +138,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
@@ -186,7 +186,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         print('Changed todo: \n',json.dumps(response.json(), indent=4, ensure_ascii=False))
 
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
@@ -283,7 +283,7 @@ class TestApiChallengePositive():
             <description>{random_description}</description>
         </todo>
         '''
-        response = HttpMethods.post(url, {**header,'Accept' : 'application/xml', 'Content-Type' : 'application/xml'},body)
+        response = HttpMethods.post_xml(url, {**header,'Accept' : 'application/xml', 'Content-Type' : 'application/xml'},body)
         BeautifyMethods.print_pretty_xml(response.text)
         assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.text}"
         assert response.headers['Content-Type'] == 'application/xml', f'Content-Type is not application/xml: {response.headers["Content-Type"]}'
@@ -291,3 +291,21 @@ class TestApiChallengePositive():
         assert_response_xml(response, 'doneStatus', body)
         assert_response_xml(response, 'description', body)
 
+    @pytest.mark.post_todo_via_json
+    def test_post_todo_via_json(self, header):
+        print('Issue a POST request on the `/todos` end point to create a todo using Content-Type `application/json`, and Accepting only JSON ie. Accept header of `application/json`')
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+        response = HttpMethods.post_json(url, {**header, 'Accept': 'application/json', 'Content-Type': 'application/json'},body)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.text}"
+        assert response.headers['Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers['Content-Type']}'
+        assert response.json()['title'] == body['title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+        assert response.json()['doneStatus'] == body['doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+        assert response.json()['description'] == body['description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"

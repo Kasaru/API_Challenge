@@ -5,7 +5,7 @@ from utils.methods import BeautifyMethods, HttpMethods
 
 base_url = 'https://apichallenges.herokuapp.com'
 
-class TestApiChallengePositive():
+class TestApiChallengeNegative():
     @pytest.mark.get_todo_not_plural
     def test_get_todo(self, header):
         print('Issue a GET request on the `/todo` end point should 404 because nouns should be plural')
@@ -34,7 +34,7 @@ class TestApiChallengePositive():
             'doneStatus': random_status,
             'description': random_description
         }
-        response = HttpMethods.post(url,header,body)
+        response = HttpMethods.post_json(url,header,body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -54,7 +54,7 @@ class TestApiChallengePositive():
             'doneStatus': random_status,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -73,7 +73,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -92,7 +92,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -111,7 +111,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -132,7 +132,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -153,7 +153,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 413, f'Status code is not 413: {response.status_code}'
@@ -173,7 +173,7 @@ class TestApiChallengePositive():
             'description': random_description,
             'unrecognisedField': 'unrecognisedField'
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -211,7 +211,7 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description,
         }
-        response = HttpMethods.post(url, header, body)
+        response = HttpMethods.post_json(url, header, body)
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
@@ -265,3 +265,24 @@ class TestApiChallengePositive():
         response = HttpMethods.get(url, {**header, 'Accept': 'application/gzip'})
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 406, f"Status code is not 406: {response.status_code}. Response: {response.json()}"
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {response.json()}'
+        assert response.json()['errorMessages'][0] == f'Unrecognised Accept Type', (
+            f'Incorrect error message: {response.json()["errorMessages"][0]}')
+
+    @pytest.mark.post_todos_not_acceptable_content_type
+    def test_post_todos_not_acceptable_content_type(self, header):
+        print('Issue a POST request on the `/todos` end point with an unsupported content type to generate a 415 status code')
+        url = base_url + endpoints.todo_id
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description,
+        }
+        response = HttpMethods.post_json(url, {**header, 'Content-Type': 'application/gzip'},body)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 415, f"Status code is not 415: {response.status_code}. Response: {response.json()}"
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {response.json()}'
+        assert response.json()['errorMessages'][0] == f'Unsupported Content Type - application/gzip', (
+            f'Incorrect error message: {response.json()["errorMessages"][0]}')
