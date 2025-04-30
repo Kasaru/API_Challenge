@@ -3,6 +3,7 @@ import pytest
 import requests
 
 import endpoints
+from utils.assertions import assert_response_xml
 from utils.data_generation import DataGeneration
 from utils.methods import BeautifyMethods, HttpMethods
 
@@ -269,4 +270,24 @@ class TestApiChallengePositive():
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
 
+    @pytest.mark.post_todo_via_xml
+    def test_post_todo_via_xml(self,header):
+        print('Issue a POST request on the `/todos` end point to create a todo using Content-Type `application/xml`, and Accepting only XML ie. Accept header of `application/xml`')
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        body =f'''
+        <todo>
+            <title>{random_title}</title>
+            <doneStatus>true</doneStatus>
+            <description>{random_description}</description>
+        </todo>
+        '''
+        response = HttpMethods.post(url, {**header,'Accept' : 'application/xml', 'Content-Type' : 'application/xml'},body)
+        BeautifyMethods.print_pretty_xml(response.text)
+        assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.text}"
+        assert response.headers['Content-Type'] == 'application/xml', f'Content-Type is not application/xml: {response.headers["Content-Type"]}'
+        assert_response_xml(response,'title',body)
+        assert_response_xml(response, 'doneStatus', body)
+        assert_response_xml(response, 'description', body)
 
