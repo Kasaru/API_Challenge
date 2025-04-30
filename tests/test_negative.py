@@ -3,6 +3,7 @@ import pytest
 import requests
 import endpoints
 from utils.data_generation import DataGeneration
+from utils.methods import BeautifyMethods, HttpMethods
 
 base_url = 'https://apichallenges.herokuapp.com'
 
@@ -11,7 +12,7 @@ class TestApiChallengePositive():
     def test_get_todo(self, header):
         print('Issue a GET request on the `/todo` end point should 404 because nouns should be plural')
         url = base_url + endpoints.invalid_todo_endpoint
-        response = requests.get(url, headers=header)
+        response = HttpMethods.get(url, header)
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
 
@@ -19,7 +20,7 @@ class TestApiChallengePositive():
     def test_get_todo_by_id(self, header):
         print('Issue a GET request on the `/todos/{id}` end point for a todo that does not exist')
         url = base_url + endpoints.invalid_todo_id
-        response = requests.get(url, headers=header)
+        response = HttpMethods.get(url, header)
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
 
@@ -39,12 +40,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url,headers=header,json=body)
+        response = HttpMethods.post(url,header,body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Failed Validation: doneStatus should be BOOLEAN but was STRING", ('Incorrect error'
                                                                                                                          f'message: {response.json()['errorMessages'][0]}')
 
@@ -64,12 +65,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Failed Validation: doneStatus should be BOOLEAN but was NUMERIC", ('Incorrect error'
                                                                                          f'message: {response.json()['errorMessages'][0]}')
 
@@ -87,12 +88,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50", ('Incorrect error'
                                                                                              f'message: {response.json()['errorMessages'][0]}')
 
@@ -110,12 +111,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Failed Validation: Maximum allowable length exceeded for title - maximum allowed is 50", ('Incorrect error'
                                                                                              f'message: {response.json()['errorMessages'][0]}')
 
@@ -134,12 +135,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][
                    0] == "Failed Validation: Maximum allowable length exceeded for description - maximum allowed is 200", (
             'Incorrect error'
@@ -160,12 +161,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][
                    0] == "Failed Validation: Maximum allowable length exceeded for description - maximum allowed is 200", (
             'Incorrect error'
@@ -185,12 +186,12 @@ class TestApiChallengePositive():
             'description': random_description
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 413, f'Status code is not 413: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Error: Request body too large, max allowed is 5000 bytes", (
                                                         f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
@@ -210,12 +211,12 @@ class TestApiChallengePositive():
             'unrecognisedField': 'unrecognisedField'
         }
 
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == "Could not find field: unrecognisedField", (
                                                         f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
@@ -234,12 +235,12 @@ class TestApiChallengePositive():
             'description': random_description,
         }
 
-        response = requests.put(url, json=body, headers=header)
+        response = HttpMethods.put(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == 'Cannot create todo with PUT due to Auto fields id', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
@@ -258,12 +259,12 @@ class TestApiChallengePositive():
             'description': random_description,
         }
 
-        response = requests.post(url, json=body, headers=header)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == f'No such todo entity instance with id == {endpoints.invalid_todo_id[endpoints.invalid_todo_id.rfind('/') + 1:]} found', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
@@ -280,12 +281,12 @@ class TestApiChallengePositive():
             'description': random_description,
         }
 
-        response = requests.put(url, json=body, headers=header)
+        response = HttpMethods.put(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == 'title : field is mandatory', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
@@ -306,11 +307,12 @@ class TestApiChallengePositive():
             'description': random_description,
         }
 
-        response = requests.put(url, json=body, headers=header)
+        response = HttpMethods.put(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
-        assert 'errorMessages' in response.json(), f'No errorMessage in response, {print(json.dumps(response.json(), indent=4, ensure_ascii=False))}'
+        assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
         assert response.json()['errorMessages'][0] == f'Can not amend id from {endpoints.todo_id[endpoints.todo_id.rfind('/') + 1:]} to {body['id']}', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
+

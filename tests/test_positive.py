@@ -3,6 +3,7 @@ import pytest
 import requests
 import endpoints
 from utils.data_generation import DataGeneration
+from utils.methods import BeautifyMethods, HttpMethods
 
 base_url = 'https://apichallenges.herokuapp.com'
 
@@ -13,7 +14,7 @@ class TestApiChallengePositive():
     def test_get_challenges(self, header):
         print('Issue a GET request on the `/challenges` end point')
         url = base_url + endpoints.challenges
-        response = requests.get(url, headers = header)
+        response = HttpMethods.get(url, headers = header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
         assert response.headers[
@@ -26,7 +27,7 @@ class TestApiChallengePositive():
     def test_get_todos(self,header):
         print('Issue a GET request on the `/todos` end point')
         url = base_url + endpoints.todos
-        response = requests.get(url, headers = header)
+        response = HttpMethods.get(url, headers = header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
         assert response.headers[
@@ -37,9 +38,9 @@ class TestApiChallengePositive():
     def test_get_todo_by_id(self, header):
         print('Issue a GET request on the `/todos/{id}` end point to return a specific todo')
         url = base_url + endpoints.todo_id
-        response = requests.get(url, headers=header)
+        response = HttpMethods.get(url, header)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
@@ -61,9 +62,9 @@ class TestApiChallengePositive():
         'doneStatus': True,
         'description': random_description
         }
-        response = requests.post(url,headers=header,json=body)
+        response = HttpMethods.post(url,header,body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body['title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
@@ -76,9 +77,9 @@ class TestApiChallengePositive():
         print('Issue a GET request on the `/todos` end point with a query filter to get only todos which are '
               '"done". There must exist both "done" and "not done" todos, to pass this challenge.')
         url = base_url + endpoints.todos + endpoints.done_status
-        response = requests.get(url, headers=header)
+        response = HttpMethods.get(url, header)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
 
@@ -88,7 +89,7 @@ class TestApiChallengePositive():
 
         url = base_url + endpoints.todos
 
-        response = requests.head(url,headers=header)
+        response = HttpMethods.head(url,header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
 
@@ -105,9 +106,9 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body[
@@ -130,9 +131,9 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body[
@@ -155,9 +156,9 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body[
@@ -180,9 +181,9 @@ class TestApiChallengePositive():
             'doneStatus': True,
             'description': random_description
         }
-        response = requests.put(url, headers=header, json=body)
+        response = HttpMethods.put(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body[
@@ -200,16 +201,16 @@ class TestApiChallengePositive():
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
 
-        get_response = requests.get(url, headers=header)
+        get_response = HttpMethods.get(url, header)
         assert get_response.status_code == 200, f"Status code is not 200: {get_response.status_code}. Response: {get_response.json()}"
-        print(json.dumps(get_response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(get_response.json())
 
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-        response = requests.post(url, headers=header, json=body)
+        response = HttpMethods.post(url, header, body)
 
         print('Changed todo: \n',json.dumps(response.json(), indent=4, ensure_ascii=False))
 
@@ -232,9 +233,9 @@ class TestApiChallengePositive():
         body = {
             'title': random_title
         }
-        response = requests.put(url, headers=header, json=body)
+        response = HttpMethods.put(url, header, body)
 
-        print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
         assert response.json()['title'] == body[
@@ -248,15 +249,15 @@ class TestApiChallengePositive():
 
         url = base_url + endpoints.todo_id
 
-        get_response = requests.get(url, headers=header)
+        get_response = HttpMethods.get(url, header)
 
-        print(json.dumps(get_response.json(), indent=4, ensure_ascii=False))
+        BeautifyMethods.print_pretty_json(get_response.json())
 
 
-        response = requests.delete(url, headers=header)
+        response = HttpMethods.delete(url, header)
 
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
-        check_response = requests.get(url, headers=header)
+        check_response = HttpMethods.get(url, header)
         assert check_response.status_code == 404, f"Status code is not 404: {check_response.status_code}. Response: {check_response.json()}"
 
 
@@ -266,9 +267,47 @@ class TestApiChallengePositive():
 
         url = base_url + endpoints.todos
 
-        response = requests.options(url,headers=header)
+        response = HttpMethods.options(url,header)
 
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
         assert response.headers['Access-Control-Allow-Methods'] == '*', f'Incorrect allowed methods: {response.headers['Access-Control-Allow-Methods']}'
 
+
+    @pytest.mark.get_todos_xml
+    def test_get_todos_xml(self, header):
+        print('Issue a GET request on the `/todos` end point with an `Accept` header of `application/xml` to receive results in XML format')
+
+        url = base_url + endpoints.todos
+
+        response = HttpMethods.get(url, {**header, 'Accept': 'application/xml'})
+
+        BeautifyMethods.print_pretty_xml(response.text)
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert response.headers['Content-Type'] == 'application/xml', f'Content-Type is not application/xml: {response.headers["Content-Type"]}'
+
+
+    @pytest.mark.get_todos_json
+    def test_get_todos_json(self, header):
+        print('Issue a GET request on the `/todos` end point with an `Accept` header of `application/json` to receive results in JSON format')
+
+        url = base_url + endpoints.todos
+
+        response = HttpMethods.get(url, {**header, 'Accept': 'application/json'})
+
+        BeautifyMethods.print_pretty_json(response.json())
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.get_todos_pref
+    def test_get_todos_pref(self, header):
+        print('Issue a GET request on the `/todos` end point with an `Accept` header of `application/xml, application/json` to receive results in the preferred XML format')
+
+        url = base_url + endpoints.todos
+
+        response = HttpMethods.get(url, {**header, 'Accept': 'application/xml, application/json'})
+
+        BeautifyMethods.print_pretty_xml(response.text)
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
 
