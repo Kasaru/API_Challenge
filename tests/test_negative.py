@@ -27,21 +27,16 @@ class TestApiChallengePositive():
     @pytest.mark.post_todo_with_string_done_status_negative
     def test_post_todo_with_string_done_status_negative(self,header):
         print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
         random_status = DataGeneration.generate_word()
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': random_status,
             'description': random_description
         }
-
         response = HttpMethods.post(url,header,body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -52,21 +47,16 @@ class TestApiChallengePositive():
     @pytest.mark.post_todo_with_int_done_status_negative
     def test_post_todo_with_int_done_status_negative(self, header):
         print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
         random_status = DataGeneration.generate_int()
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': random_status,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -79,17 +69,13 @@ class TestApiChallengePositive():
         print('Issue a POST request to create a todo but fail length validation on the `title` field because title exceeds more than maximum allowable characters.')
         random_title = DataGeneration.generate_long_text(51)
         random_description = DataGeneration.generate_description()
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -102,17 +88,13 @@ class TestApiChallengePositive():
         print('Issue a POST request to create a todo but fail length validation on the `title` field because title exceeds maximum allowable characters + space.')
         random_title = DataGeneration.generate_long_text(50) + ' '
         random_description = DataGeneration.generate_description()
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -122,21 +104,16 @@ class TestApiChallengePositive():
 
     @pytest.mark.too_long_description
     def test_too_long_description(self, header):
-        print(
-            'Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds more than maximum allowable characters.')
+        print('Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds more than maximum allowable characters.')
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_long_text(201)
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -148,21 +125,16 @@ class TestApiChallengePositive():
 
     @pytest.mark.too_long_description_with_space
     def test_too_long_description_with_space(self, header):
-        print(
-            'Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds maximum allowable characters. + space.')
+        print('Issue a POST request to create a todo but fail length validation on the `description` because your description exceeds maximum allowable characters. + space.')
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_long_text(200) + ' '
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -177,17 +149,13 @@ class TestApiChallengePositive():
         print('Issue a POST request to create a todo but fail payload length validation on the `description` because your whole payload exceeds maximum allowable 5000 characters.')
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_long_text(5000)
-
         url = base_url + endpoints.todos
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 413, f'Status code is not 413: {response.status_code}'
@@ -198,21 +166,16 @@ class TestApiChallengePositive():
     @pytest.mark.unrecognised_field
     def test_unrecognised_field(self,header):
         print('Issue a POST request to create a todo but fail validation because your payload contains an unrecognised field.')
-
         url = base_url + endpoints.todos
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description,
             'unrecognisedField': 'unrecognisedField'
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -223,20 +186,15 @@ class TestApiChallengePositive():
     @pytest.mark.create_todo_via_put
     def test_create_todo_via_put(self, header):
         print('Issue a PUT request to unsuccessfully create a todo')
-
         url = base_url + endpoints.invalid_todo_id
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description,
         }
-
         response = HttpMethods.put(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
@@ -247,20 +205,15 @@ class TestApiChallengePositive():
     @pytest.mark.update_todo_via_post
     def test_update_todo_via_post(self, header):
         print('Issue a POST request for a todo which does not exist. Expect to receive a 404 response.')
-
         url = base_url + endpoints.invalid_todo_id
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
-
         body = {
             'title': random_title,
             'doneStatus': True,
             'description': random_description,
         }
-
         response = HttpMethods.post(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
@@ -271,19 +224,14 @@ class TestApiChallengePositive():
     @pytest.mark.update_todo_via_put_without_title
     def test_update_todo_via_put_without_title(self, header):
         print('Issue a PUT request to fail to update an existing todo because title is missing in payload')
-
         url = base_url + endpoints.todo_id
-
         random_description = DataGeneration.generate_description()
-
         body = {
             'doneStatus': True,
             'description': random_description,
         }
-
         response = HttpMethods.put(url, header, body)
-
-        BeautifyMethods.print_pretty_json(response.json())
+       BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
         assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
@@ -293,22 +241,17 @@ class TestApiChallengePositive():
     @pytest.mark.update_todo_via_put_with_wrong_id
     def test_update_todo_via_put_with_wrong_id(self, header):
         print('Issue a PUT request to fail to update an existing todo because title is missing in payload')
-
         url = base_url + endpoints.todo_id
-
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
         random_id = DataGeneration.generate_int()
-
         body = {
             'id': random_id,
             'title': random_title,
             'doneStatus': True,
             'description': random_description,
         }
-
         response = HttpMethods.put(url, header, body)
-
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
