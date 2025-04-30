@@ -258,3 +258,17 @@ class TestApiChallengePositive():
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
         check_response = requests.get(url, headers=header)
         assert check_response.status_code == 404, f"Status code is not 404: {check_response.status_code}. Response: {check_response.json()}"
+
+
+    @pytest.mark.get_options
+    def test_get_options(self,header):
+        print('Issue an OPTIONS request on the `/todos` end point. You might want to manually check the "Allow" header in the response is as expected.')
+
+        url = base_url + endpoints.todos
+
+        response = requests.options(url,headers=header)
+
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert response.headers['Access-Control-Allow-Methods'] == '*', f'Incorrect allowed methods: {response.headers['Access-Control-Allow-Methods']}'
+
+
