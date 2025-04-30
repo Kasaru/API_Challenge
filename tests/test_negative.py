@@ -231,7 +231,7 @@ class TestApiChallengePositive():
             'description': random_description,
         }
         response = HttpMethods.put(url, header, body)
-       BeautifyMethods.print_pretty_json(response.json())
+        BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 400, f'Status code is not 400: {response.status_code}'
         assert 'errorMessages' in response.json(), f'No errorMessage in response, {BeautifyMethods.print_pretty_json(response.json())}'
