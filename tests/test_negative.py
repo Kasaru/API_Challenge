@@ -1,6 +1,4 @@
-import json
 import pytest
-import requests
 import endpoints
 from utils.data_generation import DataGeneration
 from utils.methods import BeautifyMethods, HttpMethods
@@ -24,8 +22,8 @@ class TestApiChallengePositive():
 
         assert response.status_code == 404, f'Status code is not 404: {response.status_code}'
 
-    @pytest.mark.post_todo_with_string_done_status_negative
-    def test_post_todo_with_string_done_status_negative(self,header):
+    @pytest.mark.post_todo_with_string_done_status
+    def test_post_todo_with_string_done_status(self,header):
         print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
@@ -44,8 +42,8 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == "Failed Validation: doneStatus should be BOOLEAN but was STRING", ('Incorrect error'
                                                                                                                          f'message: {response.json()['errorMessages'][0]}')
 
-    @pytest.mark.post_todo_with_int_done_status_negative
-    def test_post_todo_with_int_done_status_negative(self, header):
+    @pytest.mark.post_todo_with_int_done_status
+    def test_post_todo_with_int_done_status(self, header):
         print('Issue a POST request to create a todo but fail validation on the `doneStatus` field')
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()

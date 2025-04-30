@@ -1,6 +1,7 @@
 import json
 import pytest
 import requests
+
 import endpoints
 from utils.data_generation import DataGeneration
 from utils.methods import BeautifyMethods, HttpMethods
@@ -17,8 +18,7 @@ class TestApiChallengePositive():
         response = HttpMethods.get(url, headers = header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
-        assert response.headers[
-                   'Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
+        assert response.headers['Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
         assert response.json()['challenges'][1]['status'] == True, f'Status is not True: {response.json()["challenges"][1]["status"]}'
 
         print(json.dumps(response.json()['challenges'][1], indent=4, ensure_ascii=False))
@@ -30,8 +30,7 @@ class TestApiChallengePositive():
         response = HttpMethods.get(url, headers = header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
-        assert response.headers[
-                   'Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
+        assert response.headers['Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
         assert len(response.json()['todos']) == 10, f'Response lenght is incorrect {len(response.json()['todos'])}'
 
     @pytest.mark.get_todo_by_id
@@ -42,8 +41,7 @@ class TestApiChallengePositive():
         BeautifyMethods.print_pretty_json(response.json())
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
-        assert response.headers[
-                   'Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
+        assert response.headers['Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
         assert response.json()['todos'][0]['id'] == int(url[url.rfind('/')+1:]), f'Todo id is incorrect {response.json()['todos'][0]['id']}'
 
 
@@ -54,9 +52,9 @@ class TestApiChallengePositive():
         random_title = DataGeneration.generate_name()
         random_description = DataGeneration.generate_description()
         body = {
-        'title': random_title,
-        'doneStatus': True,
-        'description': random_description
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
         }
         response = HttpMethods.post(url,header,body)
         BeautifyMethods.print_pretty_json(response.json())
@@ -263,3 +261,10 @@ class TestApiChallengePositive():
         BeautifyMethods.print_pretty_xml(response.text)
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
 
+    @pytest.mark.get_todos_with_blank_accept
+    def test_get_todos_with_blank_accept(self, header):
+        print('Issue a GET request on the `/todos` end point with no `Accept` header present in the message to receive results in default JSON format')
+        url = base_url + endpoints.todos
+        response = HttpMethods.get(url, {**header, 'Accept': ''})
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
