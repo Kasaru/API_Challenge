@@ -257,3 +257,11 @@ class TestApiChallengePositive():
         assert response.json()['errorMessages'][0] == f'Can not amend id from {endpoints.todo_id[endpoints.todo_id.rfind('/') + 1:]} to {body['id']}', (
             f'Incorrect error message: {response.json()['errorMessages'][0]}')
 
+    @pytest.mark.get_todos_not_acceptable
+    def test_get_todos_not_acceptable(self, header):
+        print(
+            'Issue a GET request on the `/todos` end point with no `Accept` header present in the message to receive results in default JSON format')
+        url = base_url + endpoints.todos
+        response = HttpMethods.get(url, {**header, 'Accept': 'application/gzip'})
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 406, f"Status code is not 406: {response.status_code}. Response: {response.json()}"

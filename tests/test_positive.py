@@ -268,3 +268,5 @@ class TestApiChallengePositive():
         response = HttpMethods.get(url, {**header, 'Accept': ''})
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+
+
