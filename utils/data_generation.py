@@ -13,7 +13,7 @@ class DataGeneration:
 
     @staticmethod
     def generate_description():
-        random_description = fake.text()
+        random_description = fake.company()
         return random_description
 
     @staticmethod

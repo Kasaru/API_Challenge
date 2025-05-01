@@ -3,6 +3,7 @@ import xml.dom.minidom
 import allure
 import requests
 from utils.logger import Logger
+import xml.etree.ElementTree as ET
 
 
 class HttpMethods:
@@ -89,3 +90,22 @@ class BeautifyMethods:
     def print_pretty_json(json_string):
         pretty_json = json.dumps(json_string, indent=4, ensure_ascii=False)
         print(pretty_json)
+
+class ResponseMethods:
+
+    @staticmethod
+    def get_value_from_xml_by_tag(xml_data, tag):
+        try:
+            # Парсим XML
+            root = ET.fromstring(xml_data)
+            # Ищем тег
+            element = root.find(tag)
+            if element is None:
+                raise ValueError(f"Tag '{tag}' not found in the XML data.")
+            if element.text.lower() == 'true':
+                return True
+            elif element.text.lower() == 'false':
+                return False
+            return element.text
+        except ET.ParseError:
+            raise ValueError("Failed to parse XML data.")

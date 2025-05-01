@@ -1,11 +1,9 @@
 import json
 import pytest
-import requests
-
 import endpoints
 from utils.assertions import assert_response_xml
 from utils.data_generation import DataGeneration
-from utils.methods import BeautifyMethods, HttpMethods
+from utils.methods import HttpMethods, BeautifyMethods, ResponseMethods
 
 base_url = 'https://apichallenges.herokuapp.com'
 
@@ -318,3 +316,75 @@ class TestApiChallengePositive():
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
         assert len(response.json()['challengeStatus']) == 59, 'Incorrect list length'
+
+    @pytest.mark.put_restorable_challenger_progress_status
+    def test_put_restorable_challenger_progress_status(self, header):
+        print('Issue a PUT request on the `/challenger/{guid}` end point, with an existing challenger GUID to restore that challengers progress into memory.')
+        url = base_url + endpoints.challenger + header['X-Challenger']
+        response = HttpMethods.get(url, header)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert len(response.json()['challengeStatus']) == 59, 'Incorrect list length'
+        response = HttpMethods.put(url, header,response.json())
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert len(response.json()['challengeStatus']) == 59, 'Incorrect list length'
+
+    @pytest.mark.get_challenger_database
+    def test_get_challenger_database(self, header):
+        print('Issue a GET request on the `/challenger/database/{guid}` end point, to retrieve the current todos database for the user. You can use this to restore state later.')
+        url = base_url + endpoints.challenger_database + header['X-Challenger']
+        response = HttpMethods.get(url, header)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        print(header)
+
+    @pytest.mark.xfail
+    @pytest.mark.put_challenger_database
+    def test_put_challenger_database(self, header):
+        print('Issue a PUT request on the `/challenger/database/{guid}` end point, with a payload to restore the Todos database in memory.')
+        url = base_url + endpoints.challenger_database + header['X-Challenger']
+        response = HttpMethods.get(url, header)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        put_response = HttpMethods.put(url, header,response.json())
+        assert put_response.status_code == 204, f"Status code is not 204: {put_response.status_code}. Response"
+        assert put_response.json() == response.json(), 'PUT response is not equal to the original response'
+
+    @pytest.mark.post_xml_to_json
+    def test_post_xml_to_json(self,header):
+        print('Issue a POST request on the `/todos` end point to create a todo using Content-Type `application/xml` but Accept `application/json`')
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        body = f'''
+        <todo>
+            <title>{random_title}</title>
+            <doneStatus>true</doneStatus>
+            <description>{random_description}</description>
+        </todo>
+        '''
+        response = HttpMethods.post_xml(url,{**header,'Content-Type':'application/xml','Accept':'application/json'},body)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.json()}"
+        assert response.json()['title'] == ResponseMethods.get_value_from_xml_by_tag(body,'title'), f"Unexpected title: {response.json()['title']}. Expected: {ResponseMethods.get_value_from_xml_by_tag(body,'title')}"
+        assert response.json()['doneStatus'] == ResponseMethods.get_value_from_xml_by_tag(body,'doneStatus'), f"Unexpected title: {response.json()['doneStatus']}. Expected: {ResponseMethods.get_value_from_xml_by_tag(body, 'doneStatus')}"
+        assert response.json()['description'] == ResponseMethods.get_value_from_xml_by_tag(body,'description'), f"Unexpected title: {response.json()['description']}. Expected: {ResponseMethods.get_value_from_xml_by_tag(body, 'description')}"
+
+    @pytest.mark.post_json_to_xml
+    def test_post_json_to_xml(self,header):
+        print('Issue a POST request on the `/todos` end point to create a todo using Content-Type `application/json` but Accept `application/xml`')
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        body = {
+            'title': random_title,
+            'doneStatus': True,
+            'description': random_description
+        }
+        response = HttpMethods.post_json(url,{**header,'Content-Type':'application/json','Accept':'application/xml'},body)
+        BeautifyMethods.print_pretty_xml(response.text)
+        assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.text}"
+        assert ResponseMethods.get_value_from_xml_by_tag(response.text,'title') == body['title'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'title')}. Expected: {body['title']}"
+        assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus') == body['doneStatus'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus')}. Expected: {body['doneStatus']}"
+        assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'description') == body['description'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'description')}. Expected: {body['description']}"

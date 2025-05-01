@@ -18,3 +18,4 @@ def assert_response_xml(response, tag, body):
         )
     except ET.ParseError:
         assert False, "Failed to parse one of the XML inputs"
+
