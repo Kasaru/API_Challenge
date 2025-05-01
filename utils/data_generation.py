@@ -8,7 +8,7 @@ fake = Faker('ru_RU')
 class DataGeneration:
     @staticmethod
     def generate_name():
-        random_name = fake.company()
+        random_name = fake.job()
         return random_name
 
     @staticmethod

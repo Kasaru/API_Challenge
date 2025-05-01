@@ -309,3 +309,12 @@ class TestApiChallengePositive():
         assert response.json()['title'] == body['title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
         assert response.json()['doneStatus'] == body['doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
         assert response.json()['description'] == body['description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
+
+    @pytest.mark.get_progress
+    def test_get_progress(self, header):
+        print('Issue a GET request on the `/challenger/{guid}` end point, with an existing challenger GUID. This will return the progress data payload that can be used to later restore your progress to this status.')
+        url = base_url + endpoints.challenger + header['X-Challenger']
+        response = HttpMethods.get(url, header)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        assert len(response.json()['challengeStatus']) == 59, 'Incorrect list length'

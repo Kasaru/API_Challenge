@@ -280,9 +280,9 @@ class TestApiChallengeNegative():
             'doneStatus': True,
             'description': random_description,
         }
-        response = HttpMethods.post_json(url, {**header, 'Content-Type': 'application/gzip'},body)
+        response = HttpMethods.post_json(url, {**header, 'Content-Type': '123' },body)
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 415, f"Status code is not 415: {response.status_code}. Response: {response.json()}"
         assert 'errorMessages' in response.json(), f'No errorMessage in response, {response.json()}'
-        assert response.json()['errorMessages'][0] == f'Unsupported Content Type - application/gzip', (
+        assert response.json()['errorMessages'][0] == f'Unsupported Content Type - 123', (
             f'Incorrect error message: {response.json()["errorMessages"][0]}')
