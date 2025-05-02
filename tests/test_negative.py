@@ -352,3 +352,21 @@ class TestApiChallengeNegative():
         url = base_url + endpoints.secret_note
         response = HttpMethods.get(url, header)
         assert response.status_code == 401, f"Status code is not 401: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.post_secret_note_invalid_x_auth
+    def test_post_secret_note_invalid_x_auth(self, header):
+        print('Issue a POST request on the `/secret/note` end point with a note payload {"note":"my note"} and receive 403 when X-AUTH-TOKEN does not match a valid token')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'}, 'admin', 'password')
+        body = {"note":"my note"}
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.post_json(url,{**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN'][:-6] + 'kasaru'},body)
+        assert response.status_code == 403, f"Status code is not 403: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.post_secret_note_without_x_auth
+    def test_post_secret_note_without_x_auth(self, header):
+        print('Issue a POST request on the `/secret/note` end point with a note payload {"note":"my note"} and receive 401 when no X-AUTH-TOKEN present')
+        url = base_url + endpoints.secret_note
+        body = {"note": "my note"}
+        response = HttpMethods.post_json(url, header,body)
+        assert response.status_code == 401, f"Status code is not 401: {response.status_code}. Response: {response.json()}"

@@ -1,4 +1,6 @@
 import json
+from tabnanny import check
+
 import pytest
 import endpoints
 from endpoints import heartbeat
@@ -27,7 +29,7 @@ class TestApiChallengePositive():
     def test_get_todos(self,header):
         print('Issue a GET request on the `/todos` end point')
         url = base_url + endpoints.todos
-        response = HttpMethods.get(url, headers = header)
+        response = HttpMethods.get(url,header)
 
         assert response.status_code == 200, f'Status code is not 200: {response.status_code}'
         assert response.headers['Content-Type'] == 'application/json', f'Content-Type is not application/json: {response.headers["Content-Type"]}'
@@ -407,7 +409,7 @@ class TestApiChallengePositive():
     def test_get_secret_note(self, header):
         print('Issue a GET request on the `/secret/note` end point receive 200 when valid X-AUTH-TOKEN used - response body should contain the note')
         url = base_url + endpoints.secret_token
-        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'}, 'admin', 'password')
+        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'},'admin', 'password')
         url = base_url + endpoints.secret_note
         response = HttpMethods.get(url, {**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN']})
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
@@ -420,5 +422,66 @@ class TestApiChallengePositive():
         body = {"note":"my note"}
         url = base_url + endpoints.secret_note
         response = HttpMethods.post_json(url, {**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN']},body)
+        BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
-        print(header)
+        assert 'note' in response.json(), f"Missing note in response: {response.json()}"
+        assert response.json()['note'] == body['note'], f"Unexpected note: {response.json()['note']}. Expected: {body['note']}"
+
+    @pytest.mark.get_secret_note_bearer
+    def test_get_secret_note_bearer(self, header):
+        print('Issue a GET request on the `/secret/note` end point receive 200 when using the X-AUTH-TOKEN value as an Authorization Bearer token - response body should contain the note')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'note': 'test'},'admin', 'password')
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.get(url, {**header, 'Authorization': f'Bearer {pre_response.headers['X-AUTH-TOKEN']}'})
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.post_secret_note_bearer
+    def test_post_secret_note_bearer(self, header):
+        print('Issue a POST request on the `/secret/note` end point with a note payload e.g. {"note":"my note"} and receive 200 when valid X-AUTH-TOKEN value used as an Authorization Bearer token. Status code 200 received. Note is maximum length 100 chars and will be truncated when stored.')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'note': 'test'}, 'admin', 'password')
+        url = base_url + endpoints.secret_note
+        body = {"note": "new note"}
+        response = HttpMethods.post_json(url, {**header, 'Authorization': f'Bearer {pre_response.headers['X-AUTH-TOKEN']}'},body)
+        BeautifyMethods.print_pretty_json(response.json())
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+
+
+    @pytest.mark.delete_all_todos
+    def test_delete_all_todos(self,header):
+        print('Issue a DELETE request to successfully delete the last todo in system so that there are no more todos in the system')
+        url = base_url + endpoints.todos
+        response = HttpMethods.get(url, header)
+        response_data = response.json()
+        ids = [todo['id'] for todo in response_data.get('todos', [])]
+        for id in ids:
+            todo_url = f'{base_url}{endpoints.todos}/{id}'
+            response_del = HttpMethods.delete(todo_url, header)
+            assert response_del.status_code == 200, f"Status code is not 200: {response_del.status_code}. Response: {response_del.text}"
+            check_response = HttpMethods.get(todo_url,header)
+            assert check_response.status_code == 404, f"Status code is not 404: {check_response.status_code}. Response: {check_response.text}"
+
+    @pytest.mark.create_maximum_todos
+    def test_create_maximum_todos(self,header):
+        url = base_url + endpoints.todos
+        random_title = DataGeneration.generate_name()
+        random_description = DataGeneration.generate_description()
+        while True:
+            body = {
+                'title': random_title,
+                'doneStatus': True,
+                'description': random_description
+            }
+            response = HttpMethods.post_json(url, header, body)
+            if response.status_code == 400:
+                print("Received 400 status code. Maximum todos reached.")
+                break
+            assert response.status_code == 201, f"Unexpected status code: {response.status_code}. Response: {response.json()}"
+            assert response.json()['title'] == body[
+                'title'], f"Unexpected title: {response.json()['title']}. Expected: {body['title']}"
+            assert response.json()['doneStatus'] == body[
+                'doneStatus'], f"Unexpected doneStatus: {response.json()['doneStatus']}. Expected: {body['doneStatus']}"
+            assert response.json()['description'] == body[
+                'description'], f"Unexpected description: {response.json()['description']}. Expected: {body['description']}"
