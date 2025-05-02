@@ -1,3 +1,5 @@
+from http.client import responses
+
 import pytest
 import endpoints
 from utils.data_generation import DataGeneration
@@ -286,3 +288,53 @@ class TestApiChallengeNegative():
         assert 'errorMessages' in response.json(), f'No errorMessage in response, {response.json()}'
         assert response.json()['errorMessages'][0] == f'Unsupported Content Type - 123', (
             f'Incorrect error message: {response.json()["errorMessages"][0]}')
+
+    @pytest.mark.delete_heartbeat
+    def test_delete_heartbeat(self, header):
+        print('Issue a DELETE request on the `/heartbeat` end point and receive 405 (Method Not Allowed)')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.delete(url,header)
+        assert response.status_code == 405, f"Status code is not 405: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.patch_heartbeat
+    def test_patch_heartbeat(self, header):
+        print('Issue a PATCH request on the `/heartbeat` end point and receive 500 (internal server error)')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.patch(url, header,{})
+        assert response.status_code == 500, f"Status code is not 500: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.trace_heartbeat
+    def test_trace_heartbeat(self, header):
+        print('Issue a POST request on the `/heartbeat` end point and receive 501 (Not Implemented) when you override the Method Verb to a TRACE')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.trace(url, header)
+        assert response.status_code == 501, f"Status code is not 501: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.override_delete_heartbeat
+    def test_override_delete_heartbeat(self, header):
+        print('Issue a POST request on the `/heartbeat` end point and receive 405 when you override the Method Verb to a DELETE')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.post_json(url, {**header,'X-HTTP-Method-Override':'Delete'},{})
+        assert response.status_code == 405, f"Status code is not 405: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.override_patch_heartbeat
+    def test_override_patch_heartbeat(self, header):
+        print('Issue a POST request on the `/heartbeat` end point and receive 500 when you override the Method Verb to a PATCH')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.post_json(url, {**header,'X-HTTP-Method-Override':'Patch'},{})
+        assert response.status_code == 500, f"Status code is not 500: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.override_trace_heartbeat
+    def test_override_trace_heartbeat(self, header):
+        print('Issue a POST request on the `/heartbeat` end point and receive 501 (Not Implemented) when you override the Method Verb to a TRACE')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.post_json(url, {**header,'X-HTTP-Method-Override':'Trace'},{})
+        assert response.status_code == 501, f"Status code is not 501: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.post_secret_token_incorrect_uname
+    def test_post_secret_token_incorrect_uname(self,header):
+        print('Issue a POST request on the `/secret/token` end point and receive 401 when Basic auth username/password is not admin/password')
+        url = base_url + endpoints.secret_token
+        response = HttpMethods.post_json_basic(url,header,{},'amin', 'password')
+        assert response.status_code == 401, f"Status code is not 401: {response.status_code}. Response: {response.json()}"
+

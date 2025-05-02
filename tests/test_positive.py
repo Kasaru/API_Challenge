@@ -1,6 +1,7 @@
 import json
 import pytest
 import endpoints
+from endpoints import heartbeat
 from utils.assertions import assert_response_xml
 from utils.data_generation import DataGeneration
 from utils.methods import HttpMethods, BeautifyMethods, ResponseMethods
@@ -337,7 +338,6 @@ class TestApiChallengePositive():
         response = HttpMethods.get(url, header)
         BeautifyMethods.print_pretty_json(response.json())
         assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
-        print(header)
 
     @pytest.mark.xfail
     @pytest.mark.put_challenger_database
@@ -388,3 +388,18 @@ class TestApiChallengePositive():
         assert ResponseMethods.get_value_from_xml_by_tag(response.text,'title') == body['title'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'title')}. Expected: {body['title']}"
         assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus') == body['doneStatus'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus')}. Expected: {body['doneStatus']}"
         assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'description') == body['description'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'description')}. Expected: {body['description']}"
+        print(header)
+
+    @pytest.mark.get_heartbeat
+    def test_get_heartbeat(self,header):
+        print('Issue a GET request on the `/heartbeat` end point and receive 204 when server is running')
+        url = base_url + endpoints.heartbeat
+        response = HttpMethods.get(url,header)
+        assert response.status_code == 204, f"Status code is not 204: {response.status_code}. Response: {response.text}"
+
+    @pytest.mark.post_secret_token
+    def test_post_secret_token(self,header):
+        print('Issue a POST request on the `/secret/token` end point and receive 201 when Basic auth username/password is admin/password')
+        url = base_url + endpoints.secret_token
+        response = HttpMethods.post_json_basic(url,header,{'test':'test'},'admin', 'password')
+        assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.json()}"
