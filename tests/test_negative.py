@@ -261,8 +261,7 @@ class TestApiChallengeNegative():
 
     @pytest.mark.get_todos_not_acceptable
     def test_get_todos_not_acceptable(self, header):
-        print(
-            'Issue a GET request on the `/todos` end point with no `Accept` header present in the message to receive results in default JSON format')
+        print('Issue a GET request on the `/todos` end point with no `Accept` header present in the message to receive results in default JSON format')
         url = base_url + endpoints.todos
         response = HttpMethods.get(url, {**header, 'Accept': 'application/gzip'})
         BeautifyMethods.print_pretty_json(response.json())
@@ -338,3 +337,18 @@ class TestApiChallengeNegative():
         response = HttpMethods.post_json_basic(url,header,{},'amin', 'password')
         assert response.status_code == 401, f"Status code is not 401: {response.status_code}. Response: {response.json()}"
 
+    @pytest.mark.get_secret_note_invalid_x_auth
+    def test_get_secret_note_invalid_x_auth(self, header):
+        print('Issue a GET request on the `/secret/note` end point and receive 403 when X-AUTH-TOKEN does not match a valid token')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'}, 'admin', 'password')
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.get(url, {**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN'][:-6]+'kasaru'})
+        assert response.status_code == 403, f"Status code is not 403: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.get_secret_note_without_x_auth
+    def test_get_secret_note_without_x_auth(self, header):
+        print('Issue a GET request on the `/secret/note` end point and receive 401 when no X-AUTH-TOKEN header present')
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.get(url, header)
+        assert response.status_code == 401, f"Status code is not 401: {response.status_code}. Response: {response.json()}"

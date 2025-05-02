@@ -10,4 +10,5 @@ done_status = '?doneStatus=true'
 challenger_database = '/challenger/database/'
 heartbeat = '/heartbeat'
 secret_token = '/secret/token'
+secret_note = '/secret/note'
 

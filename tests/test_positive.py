@@ -388,7 +388,6 @@ class TestApiChallengePositive():
         assert ResponseMethods.get_value_from_xml_by_tag(response.text,'title') == body['title'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'title')}. Expected: {body['title']}"
         assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus') == body['doneStatus'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'doneStatus')}. Expected: {body['doneStatus']}"
         assert ResponseMethods.get_value_from_xml_by_tag(response.text, 'description') == body['description'], f"Unexpected title: {ResponseMethods.get_value_from_xml_by_tag(response.text, 'description')}. Expected: {body['description']}"
-        print(header)
 
     @pytest.mark.get_heartbeat
     def test_get_heartbeat(self,header):
@@ -403,3 +402,23 @@ class TestApiChallengePositive():
         url = base_url + endpoints.secret_token
         response = HttpMethods.post_json_basic(url,header,{'test':'test'},'admin', 'password')
         assert response.status_code == 201, f"Status code is not 201: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.get_secret_note
+    def test_get_secret_note(self, header):
+        print('Issue a GET request on the `/secret/note` end point receive 200 when valid X-AUTH-TOKEN used - response body should contain the note')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'}, 'admin', 'password')
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.get(url, {**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN']})
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+
+    @pytest.mark.post_secret_note
+    def test_post_secret_note(self, header):
+        print('Issue a POST request on the `/secret/note` end point with a note payload e.g. {"note":"my note"} and receive 200 when valid X-AUTH-TOKEN used. Note is maximum length 100 chars and will be truncated when stored.')
+        url = base_url + endpoints.secret_token
+        pre_response = HttpMethods.post_json_basic(url, header, {'test': 'test'}, 'admin', 'password')
+        body = {"note":"my note"}
+        url = base_url + endpoints.secret_note
+        response = HttpMethods.post_json(url, {**header, 'X-AUTH-TOKEN': pre_response.headers['X-AUTH-TOKEN']},body)
+        assert response.status_code == 200, f"Status code is not 200: {response.status_code}. Response: {response.json()}"
+        print(header)
