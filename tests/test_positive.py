@@ -394,3 +394,4 @@ class TestApiChallengePositive:
                 Checking.check_body_field_json(response,body,'title')
                 Checking.check_body_field_json(response,body,'doneStatus')
                 Checking.check_body_field_json(response,body,'description')
+        print(header)
