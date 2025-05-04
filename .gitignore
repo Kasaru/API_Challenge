@@ -16,6 +16,7 @@ venv/
 allure-results/
 allure-report/
 logs/*
+!logs/.gitkeep
 
 # Selenium
 *.session
