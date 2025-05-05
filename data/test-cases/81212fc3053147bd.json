@@ -1,0 +1,144 @@
+{
+  "uid" : "81212fc3053147bd",
+  "name" : "test_get_todos_with_done_status",
+  "fullName" : "tests.test_positive.TestApiChallengePositive#test_get_todos_with_done_status",
+  "historyId" : "3e49edb4b1463d8ff023650b20fec399",
+  "time" : {
+    "start" : 1746437623742,
+    "stop" : 1746437623914,
+    "duration" : 172
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ {
+    "name" : "header",
+    "time" : {
+      "start" : 1746437618007,
+      "stop" : 1746437618168,
+      "duration" : 161
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "stepsCount" : 0,
+    "hasContent" : false
+  }, {
+    "name" : "_session_faker",
+    "time" : {
+      "start" : 1746437617921,
+      "stop" : 1746437618006,
+      "duration" : 85
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "stepsCount" : 0,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Issue a GET request on the `/todos` end point with a query filter to get only todos which are \"done\". There must exist both \"done\" and \"not done\" todos, to pass this challenge.",
+      "time" : {
+        "start" : 1746437623742,
+        "stop" : 1746437623914,
+        "duration" : 172
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "GET",
+        "time" : {
+          "start" : 1746437623742,
+          "stop" : 1746437623914,
+          "duration" : 172
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "stepsCount" : 0,
+        "hasContent" : false
+      }, {
+        "name" : "Проверка статус кода ответа",
+        "time" : {
+          "start" : 1746437623914,
+          "stop" : 1746437623914,
+          "duration" : 0
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "stepsCount" : 0,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "stepsCount" : 2,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "stepsCount" : 3,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "tag",
+    "value" : "get_todos_with_done_status"
+  }, {
+    "name" : "parentSuite",
+    "value" : "tests"
+  }, {
+    "name" : "suite",
+    "value" : "test_positive"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestApiChallengePositive"
+  }, {
+    "name" : "host",
+    "value" : "9d565993ded0"
+  }, {
+    "name" : "thread",
+    "value" : "1-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "tests.test_positive"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ "get_todos_with_done_status" ]
+  },
+  "source" : "81212fc3053147bd.json",
+  "parameterValues" : [ ]
+}
